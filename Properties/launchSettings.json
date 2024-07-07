@@ -11,7 +11,7 @@
     "FlightFinder": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5251",
+      "applicationUrl": "http://localhost:5261",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"

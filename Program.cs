@@ -1,8 +1,11 @@
+using FlightFinder.Models;
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<FlightFinderContext>();
 
 var app = builder.Build();
 
