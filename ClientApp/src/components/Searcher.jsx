@@ -7,11 +7,11 @@ const Searcher = () => {
     const [flights, setFlights] = useState([]);
 
     const ConsumeAPI = async () => {
-        const response = await fetch("api/flights");  // Making a fetch request to the specified API endpoint
-        if (response.ok) {  // Checking if the response status is in the range 200-299 (successful response)
-            const data = await response.json();  // Parsing the JSON data from the response
-            console.log(data);  // Logging the fetched data to the console
-            setFlights(data);  // Updating the 'flights' state with the fetched data
+        const response = await fetch("api/flights");  
+        if (response.ok) {  
+            const data = await response.json();  
+            console.log(data);  
+            setFlights(data);  
         }
     }
     useEffect(() => {

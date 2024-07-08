@@ -119,5 +119,46 @@ namespace FlightFinder.Controllers
         {
             return (_context.Airports?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        //TODO test. Devuelve los aeropuestos disponibles segun el de destino o origen definido
+        [HttpGet("LinkedWith/{id}")]
+        public async Task<ActionResult<IEnumerable<Airport>>> GetAirportlinkedWith(int id,bool origin )
+        {
+
+            object result; //TODO Esta linea podria estar mal, testear llegado el momento 
+            if (_context.Airports == null)
+            {
+                return NotFound();
+            }
+            
+            if (origin == true)
+            {
+                 result = await (from d in _context.Airports
+                                    join f in _context.Flights on d.Id equals f.DestinationId
+                                    where f.OriginId == id
+                                    select new
+                                    {
+                                        d.Id
+                                    }).ToListAsync();
+            }
+            else
+            {
+                 result = await (from o in _context.Airports
+                                    join f in _context.Flights on o.Id equals f.OriginId
+                                    where f.DestinationId == id
+                                    select new
+                                    {
+                                        o.Id
+                                    }).ToListAsync();
+            }
+        
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
     }
 }
