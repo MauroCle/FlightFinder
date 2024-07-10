@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-select": "^5.8.0",
+    "spa-proxy": "^1.0.8"
+  }
+}

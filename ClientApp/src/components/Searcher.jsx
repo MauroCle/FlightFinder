@@ -1,6 +1,6 @@
 ﻿import 'bootstrap/dist/css/bootstrap.css';
 import { useEffect, useState } from "react";
-
+import Tests from "./Tests"
 
 
 const Searcher = () => {
@@ -110,6 +110,7 @@ const Searcher = () => {
                     </div>
                 </div>
             </form>
+            <Tests/>
         </div>
     )
 }

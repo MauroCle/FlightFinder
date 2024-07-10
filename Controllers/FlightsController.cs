@@ -24,11 +24,11 @@ namespace FlightFinder.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Flight>>> GetFlights()
         {
-          if (_context.Flights == null)
-          {
-              return NotFound();
+            if (_context.Flights == null)
+            {
+                return NotFound();
             }
-            List <Flight> flights =  await _context.Flights.ToListAsync();
+            List<Flight> flights = await _context.Flights.ToListAsync();
             return StatusCode(StatusCodes.Status200OK, flights);
         }
 
@@ -36,10 +36,10 @@ namespace FlightFinder.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Flight>> GetFlight(int id)
         {
-          if (_context.Flights == null)
-          {
-              return NotFound();
-          }
+            if (_context.Flights == null)
+            {
+                return NotFound();
+            }
             var flight = await _context.Flights.FindAsync(id);
 
             if (flight == null)
@@ -86,10 +86,10 @@ namespace FlightFinder.Controllers
         [HttpPost]
         public async Task<ActionResult<Flight>> PostFlight(Flight flight)
         {
-          if (_context.Flights == null)
-          {
-              return Problem("Entity set 'FlightFinderContext.Flights'  is null.");
-          }
+            if (_context.Flights == null)
+            {
+                return Problem("Entity set 'FlightFinderContext.Flights'  is null.");
+            }
             _context.Flights.Add(flight);
             await _context.SaveChangesAsync();
 
@@ -120,5 +120,70 @@ namespace FlightFinder.Controllers
         {
             return (_context.Flights?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        //TODO add date
+        [HttpGet("{departureId}_{destinationId}")]
+        //public async Task<ActionResult<Flight>> GetConection(int departureId, int DestinationId)
+        public async Task<ActionResult<List<Flight>>> GetConections(int departureId, int destinationId)
+        {
+            if (_context.Flights == null)
+            {
+                return NotFound();
+            }
+            List<Flight> directFlight = _context.Flights
+                                        .Where(e => e.OriginId == departureId && e.DestinationId == destinationId)
+                                        .ToList();
+
+            if (directFlight.Count > 0)
+            {
+                return directFlight;
+            }
+
+            List<Flight> connections = RecursiveSearchConnection(departureId, destinationId, new HashSet<int>());
+
+            if (connections == null || connections.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return connections;
+        }
+
+        //TODO add date
+        private List<Flight> RecursiveSearchConnection(int departureId, int destinationId, HashSet<int> visitedDestinations)
+        {
+            if (visitedDestinations.Contains(destinationId))
+            {
+                return null;
+            }
+
+            visitedDestinations.Add(destinationId);
+
+            List<Flight> incomingFlights = _context.Flights
+                                           .Where(e => e.DestinationId == destinationId)
+                                           .ToList();
+
+
+            foreach(var flight in incomingFlights)
+            {
+                //Check if there is a direct connection from the origin
+                if (flight.OriginId == departureId)
+                {
+                    return new List<Flight> { flight };
+                }
+
+                //If there is no direct connection, search recursively from the current flight origin
+                List<Flight> subConnections = RecursiveSearchConnection(departureId, flight.OriginId, visitedDestinations);
+
+                if (subConnections != null && subConnections.Count > 0)
+                {
+                    subConnections.Add(flight);
+                    return subConnections;
+                }
+            }
+
+            return null;
+        }
+
     }
 }
